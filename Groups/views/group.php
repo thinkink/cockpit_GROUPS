@@ -205,7 +205,25 @@
                 <field-boolean bind="group.singletons.manage" label="@lang('Manage')"></field-boolean>
             </div>
         </div>
-
+		<?php
+		$resources = $app('acl')->getResources(); 
+		$coreModules = ["cockpit","collections", "forms", "regions", "singletons"];
+	 
+		foreach($resources as $resource=>$actions){
+			if(!in_array($resource,$coreModules )){
+				
+				echo '<div class="uk-form-row">';
+				echo '<strong class="uk-text-uppercase">'. $resource .'</strong>';
+				 
+				foreach($actions as $action){
+					echo '<div class="uk-margin-small-top">';
+				echo '<field-boolean bind="group.applications.'. $action .'" label="'. $app("i18n")->get(ucfirst($action)).'"></field-boolean>';
+					echo '</div> ';
+				 }
+			echo '</div> ';
+			}
+		}
+		?>
     </div>
 
    <script type="view/script">
