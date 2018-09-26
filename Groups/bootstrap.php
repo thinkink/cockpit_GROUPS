@@ -24,6 +24,7 @@ $this->module("cockpit")->extend([
  * extend groups/acls by db data
  */
 $groups_data = $app->storage->find("cockpit/groups");
+$resources = $app('acl')->getResources();
 foreach ($groups_data as $i => $row) {
    $isSuperAdmin = isset($row['admin']) ? $row['admin'] : false;
    $vars = isset($row['vars']) ? $row['vars'] : [];
@@ -34,13 +35,10 @@ foreach ($groups_data as $i => $row) {
    $app('acl')->addGroup($group_name, $isSuperAdmin, $vars);
 
    // add the assigned acls for the group
-   $acls_filtered = [
-       'cockpit' => @$row['cockpit'],
-       'collections' => @$row['collections'],
-       'singletons' => @$row['singletons'],
-       'regions' => @$row['regions'],
-       'forms' => @$row['forms']
-   ];
+    $acls_filtered = [];
+    foreach($resources  as $r=>$resource){
+        $acls_filtered[$r] =  @$row[$r];
+    }
    if (!$isSuperAdmin && is_array($acls_filtered)) {
       foreach (array_filter($acls_filtered) as $resource => $actions) {
          foreach ($actions as $action => $allow) {
